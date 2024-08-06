@@ -1,9 +1,12 @@
 import subprocess
+from pathlib import Path
 
 from PIL import Image, ImageDraw
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+from tqdm import tqdm
 
 # should work like...
 # import fast_plot as fp
@@ -121,12 +124,44 @@ def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=
 
     return img
 
-def make_mp4(pattern, save_path, framerate):
+def make_mp4(data, save_path, keep_frames=False, frames_folder='fp_frames_temp', frame_name='frame', framerate=24, use_tqdm=True, **kwargs):
+    n_places = int(np.log10(len(data))) + 1
+
+    frames_folder = Path(frames_folder)
+    frames_folder.mkdir(exist_ok=True, parents=True)
+
+    save_paths = []
+
+    def save_func(frame, i):
+        img = imshow(frame, **kwargs)
+
+        fn = frame_name + '_' + str(i).zfill(n_places) # zfill can take a variable argument unlike fstrings
+
+        sp = frames_folder / f'{fn}.png'
+        save_paths.append(sp)
+        img.save(sp)
+
+    if use_tqdm:
+        for i,frame in tqdm(enumerate(data), total=len(data)):
+            save_func(frame, i)
+    else:
+        for i,frame in enumerate(data):
+            save_func(frame, i)
+    
+    pattern = frames_folder / f'{frame_name}_%0{n_places}d.png'
+    make_mp4_from_files(pattern, save_path, framerate)
+
+    if not keep_frames:
+        for sp in save_paths:
+            sp.unlink()
+        frames_folder.rmdir()
+
+def make_mp4_from_files(pattern, save_path, framerate):
     '''
     make an mp4 file from the files given
 
     args:
-        pattern: the filename save pattern ie: 'frame_%04.png' corresponds to frame_0000.png, frame_0001.png, frame_0002.png, etc.
+        pattern: the filename save pattern ie: 'frame_%04d.png' corresponds to frame_0000.png, frame_0001.png, frame_0002.png, etc.
         save_path: the complete path we will be saving to
                    should end in .mp4
                    e.g. 'saveme/name.mp4'
