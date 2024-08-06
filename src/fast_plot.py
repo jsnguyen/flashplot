@@ -18,6 +18,23 @@ def map_value_to_color(value, colormap='viridis'):
     return color
 
 def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | None = None, end_type: type | None = None, log_scale: bool = False):
+    '''
+    rescales the values in an array to fit between a range
+
+    args:
+        lo: the lower limit of the new range
+        hi: the upper limit of the new range
+        vmin: the lower clip bound, anything below this value is clipped and set to this value
+        vmax: the upper clip bound, anything above this value is clipped and set to this value
+        end_type: the final type to cast to e.g. np.uint8, np.float64
+                  casts using ndarray.astype
+        log_scale: use a log base 10 scale
+                   note that vmin and vmax correspond to the input image value, not the log scale value
+
+    returns:
+        the rescaled array given the input
+
+    '''
 
     # if vmin/vmax not set, you just choose the min max of the image
     # clip the min/max of the image if it is set
@@ -47,11 +64,24 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
 
     return arr
 
-def imshow(arr, scale: float | None = None, int_scale: int | None = None, log_scale: bool = False, vmin: float | None = None, vmax: float | None = None):
+def imshow(arr, scale: float | None = None, int_scale: int | None = None, **kwargs):
+    '''
+    meant to replicate plt.imshow()
 
-    arr = rescale(arr, 0, 255, vmin=vmin, vmax=vmax, end_type=np.uint8, log_scale=log_scale)
+    args:
+        arr: image array that gets rescaled from 0 to 255
+        scale: the float scaling, uses lanczos resampling to scale
+               this will interpolate some pixels and smooth out features slightly
+        int_scale: the integer scaling using nearest neighbor resampling to scale
+                   use this to preserve fine pixel details
+        kwargs:
+            vmin: lower clip
+            vmax: upper clip
+            log_scale: log scale the image
+    '''
 
-    # Create and save the image
+    arr = rescale(arr, 0, 255, end_type=np.uint8, **kwargs)
+
     image = Image.fromarray(arr)
     sy, sx = arr.shape
 
@@ -67,15 +97,14 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, log_sc
 
     return image
 
-def plot(plot_xs, plot_ys, x_vmin=None, x_vmax=None, y_vmin=None, y_vmax=None, size=(300,300)):
+def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=(300,300), padding=10):
     sy, sx = size
 
-    padding = 10
     hi_x = sx - padding
     hi_y = sy - padding
 
-    rs_xs = rescale(plot_xs, padding, hi_x, vmin=x_vmin, vmax=x_vmax)
-    rs_ys = rescale(plot_ys, padding, hi_y, vmin=y_vmin, vmax=y_vmax)
+    rs_xs = rescale(plot_xs, padding, hi_x, vmin=x_min, vmax=x_max)
+    rs_ys = rescale(plot_ys, padding, hi_y, vmin=y_min, vmax=y_max)
 
     img = Image.new('L', size)
     draw = ImageDraw.Draw(img)
@@ -93,7 +122,21 @@ def plot(plot_xs, plot_ys, x_vmin=None, x_vmax=None, y_vmin=None, y_vmax=None, s
     return img
 
 def make_mp4(pattern, save_path, framerate):
+    '''
+    make an mp4 file from the files given
+
+    args:
+        pattern: the filename save pattern ie: 'frame_%04.png' corresponds to frame_0000.png, frame_0001.png, frame_0002.png, etc.
+        save_path: the complete path we will be saving to
+                   should end in .mp4
+                   e.g. 'saveme/name.mp4'
+        framerate: the framerate of the ending movie
+    '''
     subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-r', f'{framerate:d}', '-i', f'{pattern}', '-vcodec', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p', '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', f'{save_path}'])
 
 def show_mp4(filename):
+    '''
+    shows the mp4 file after its made using the lightweight ffplay player
+    ffplay comes with ffmpeg!
+    '''
     subprocess.run(['ffplay', '-loop', '0', filename])
