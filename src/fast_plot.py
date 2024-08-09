@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps, ImageFont
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,7 +67,7 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
 
     return arr
 
-def imshow(arr, scale: float | None = None, int_scale: int | None = None, **kwargs):
+def imshow(arr, scale: float | None = None, int_scale: int | None = None, title: str | None = None, **kwargs):
     '''
     meant to replicate plt.imshow()
 
@@ -81,6 +81,8 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, **kwar
             vmin: lower clip
             vmax: upper clip
             log_scale: log scale the image
+            title: add title to bottom of image
+            font: font
     '''
 
     arr = rescale(arr, 0, 255, end_type=np.uint8, **kwargs)
@@ -90,13 +92,23 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, **kwar
 
     # used for integer factor sizing
     if int_scale is not None:
-        image = image.resize((sx*int_scale, sy*int_scale), Image.Resampling.NEAREST)
+        sx = sx*int_scale
+        sy = sy*int_scale
+        image = image.resize((sx, sy), Image.Resampling.NEAREST)
 
     # float factor scaling
     if scale is not None:
-        image = image.resize((int(sx*scale), int(sy*scale)), Image.Resampling.LANCZOS)
+        sx = sx*scale
+        sy = sy*scale
+        image = image.resize((int(sx), int(sy)), Image.Resampling.LANCZOS)
 
     image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+    if title is not None:
+        image = ImageOps.expand(image, border=(0,0,0,35), fill=(0))
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype('Courier New.ttf', 24)
+        draw.text((10, sy+4), title, (255), font=font)
 
     return image
 
@@ -124,7 +136,7 @@ def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=
 
     return img
 
-def make_mp4(data, save_path, keep_frames=False, frames_folder='fp_frames_temp', frame_name='frame', framerate=24, use_tqdm=True, **kwargs):
+def make_mp4(data, save_path, keep_frames=False, frames_folder='fp_frames_temp', frame_name='frame', framerate=24, use_tqdm=True, titles=None, **kwargs):
     n_places = int(np.log10(len(data))) + 1
 
     frames_folder = Path(frames_folder)
@@ -133,7 +145,11 @@ def make_mp4(data, save_path, keep_frames=False, frames_folder='fp_frames_temp',
     save_paths = []
 
     def save_func(frame, i):
-        img = imshow(frame, **kwargs)
+        title = None
+        if titles is not None:
+            title = titles[i]
+
+        img = imshow(frame, title=title, **kwargs)
 
         fn = frame_name + '_' + str(i).zfill(n_places) # zfill can take a variable argument unlike fstrings
 
