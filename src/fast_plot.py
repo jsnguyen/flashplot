@@ -57,17 +57,19 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
         vmin = np.log10(vmin)
         vmax = np.log10(vmax)
 
+    scale_factor = (hi-lo)/(vmax-vmin)
+
     # shift from vmin to lo
-    arr = arr - vmin + lo
+    arr = arr - vmin + lo/scale_factor
     # rescales from lo to hi
-    arr = arr * (hi-lo)/(vmax-vmin)
+    arr = arr * scale_factor
 
     if end_type is not None:
         arr = arr.astype(end_type)
 
     return arr
 
-def imshow(arr, scale: float | None = None, int_scale: int | None = None, title: str | None = None, **kwargs):
+def imshow(arr, scale: float | None = None, int_scale: int | None = None, title: str | None = None, size: tuple | None = None, **kwargs):
     '''
     meant to replicate plt.imshow()
 
@@ -102,6 +104,9 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
         sy = sy*scale
         image = image.resize((int(sx), int(sy)), Image.Resampling.LANCZOS)
 
+    if size is not None:
+        image = image.resize(size, Image.Resampling.LANCZOS)
+
     image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
     if title is not None:
@@ -115,11 +120,8 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
 def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=(300,300), padding=10):
     sy, sx = size
 
-    hi_x = sx - padding
-    hi_y = sy - padding
-
-    rs_xs = rescale(plot_xs, padding, hi_x, vmin=x_min, vmax=x_max)
-    rs_ys = rescale(plot_ys, padding, hi_y, vmin=y_min, vmax=y_max)
+    rs_xs = rescale(plot_xs, padding, sx-padding, vmin=x_min, vmax=x_max)
+    rs_ys = rescale(plot_ys, padding, sy-padding, vmin=y_min, vmax=y_max)
 
     img = Image.new('L', size)
     draw = ImageDraw.Draw(img)
