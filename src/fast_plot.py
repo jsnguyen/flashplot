@@ -69,7 +69,7 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
 
     return arr
 
-def imshow(arr, scale: float | None = None, int_scale: int | None = None, title: str | None = None, size: tuple | None = None, **kwargs):
+def imshow(arr, scale: float | None = None, int_scale: int | None = None, title: str | None = None, size: tuple | None = None, cmap=None, **kwargs):
     '''
     meant to replicate plt.imshow()
 
@@ -87,10 +87,14 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
             font: font
     '''
 
+    sy, sx = arr.shape
+
     arr = rescale(arr, 0, 255, end_type=np.uint8, **kwargs)
 
+    if cmap is not None:
+        arr = map_value_to_color(arr, colormap=cmap)
+
     image = Image.fromarray(arr)
-    sy, sx = arr.shape
 
     # used for integer factor sizing
     if int_scale is not None:
