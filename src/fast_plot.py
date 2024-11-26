@@ -52,7 +52,7 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
         arr[arr > vmax] = vmax
 
     if log_scale:
-        arr[arr<0] = np.NaN
+        arr[arr<0] = np.nan
         arr = np.log10(arr)
         vmin = np.log10(vmin)
         vmax = np.log10(vmax)
