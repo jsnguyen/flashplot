@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 # should work like...
-# import fast_plot as fp
+# import flashplot as fp
 # fp.plot()
 
 def map_value_to_color(value, colormap='viridis'):

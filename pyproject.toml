@@ -1,6 +1,6 @@
 [project]
-name = "prontoplot"
-version = "0.0.1"
+name = "flashplot"
+version = "0.0.3"
 dependencies = [
   "numpy",
   "matplotlib",
@@ -11,3 +11,6 @@ requires-python = ">= 3.8"
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

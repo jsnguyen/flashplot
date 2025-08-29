@@ -1,5 +1,9 @@
-# prontoplot
+# flashplot
 
 ```
-pip install prontoplot
+pip install flashplot
+```
+
+```python
+import flashplot as fp
 ```
