@@ -20,7 +20,7 @@ def map_value_to_color(value, colormap='viridis'):
 
     return color
 
-def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | None = None, end_type: type | None = None, log_scale: bool = False):
+def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | None = None, end_type: type | None = None, log_scale: bool = False, nanreplace: float = 0.0):
     '''
     rescales the values in an array to fit between a range
 
@@ -63,6 +63,8 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
     arr = arr - vmin + lo/scale_factor
     # rescales from lo to hi
     arr = arr * scale_factor
+
+    arr = np.nan_to_num(arr, nan=nanreplace)
 
     if end_type is not None:
         arr = arr.astype(end_type)
