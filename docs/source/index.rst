@@ -12,6 +12,17 @@ flashplot documentation
    :maxdepth: 2
    :caption: Contents:
 
+Usage
+--------
+
+Here's a short example script going over basic usage:
+
+.. literalinclude:: ../../examples/examples.py
+        :language: python
+        :linenos:
+
+`View examples/examples.py on GitHub <https://github.com/jsnguyen/flashplot/blob/main/examples/examples.py>`_
+
 API Reference
 -------------
 
@@ -20,10 +31,3 @@ API Reference
 .. autofunction:: flashplot.make_mp4_from_data
 .. autofunction:: flashplot.make_mp4_from_files
 .. autofunction:: flashplot.show_mp4
-
-Examples
---------
-
-See usage examples in :doc:`../../examples/examples` or view the file `examples/examples.py` in the repository.
-
-`View examples/examples.py on GitHub <https://github.com/jsnguyen/flashplot/blob/main/examples/examples.py>`_
