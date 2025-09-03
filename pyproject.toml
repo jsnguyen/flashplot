@@ -8,12 +8,11 @@ dependencies = [
   "tqdm>=4.67.1"]
 requires-python = ">= 3.11"
 
-[project.optional-dependencies]
+[dependency-groups]
 docs = [
-  "sphinx>=8.2.3",
-  "sphinx-rtd-theme>=3.0.2"
+  "sphinx",
+  "sphinx-rtd-theme"
 ]
-
 
 [build-system]
 requires = ["setuptools"]
