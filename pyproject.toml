@@ -5,10 +5,15 @@ dependencies = [
   "numpy",
   "matplotlib",
   "pillow",
-  "tqdm>=4.67.1"
+  "tqdm>=4.67.1"]
+requires-python = ">= 3.11"
+
+[project.optional-dependencies]
+docs = [
+  "sphinx>=8.2.3",
+  "sphinx-rtd-theme>=3.0.2"
 ]
 
-requires-python = ">= 3.11"
 
 [build-system]
 requires = ["setuptools"]
@@ -16,9 +21,3 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[dependency-groups]
-docs = [
-  "sphinx>=8.2.3",
-  "sphinx-rtd-theme>=3.0.2"
-]
