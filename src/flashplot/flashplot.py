@@ -12,7 +12,17 @@ from tqdm import tqdm
 # import flashplot as fp
 # fp.plot()
 
-def map_value_to_color(value, colormap='viridis'):
+def _map_value_to_color(value, colormap='viridis'):
+    '''
+    Maps a value to a color using a colormap.
+
+    Args:
+        value: the input value to map
+        colormap: the name of the colormap to use, defaults to 'viridis'
+
+    Returns:
+        The RGBA color value as a tuple.
+    '''
 
     norm = plt.Normalize(vmin=0, vmax=255)
     cmap = plt.get_cmap(colormap)
@@ -22,9 +32,9 @@ def map_value_to_color(value, colormap='viridis'):
 
 def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | None = None, end_type: type | None = None, log_scale: bool = False, nanreplace: float = 0.0):
     '''
-    rescales the values in an array to fit between a range
+    Rescales the values in an array to fit between a range
 
-    args:
+    Args:
         lo: the lower limit of the new range
         hi: the upper limit of the new range
         vmin: the lower clip bound, anything below this value is clipped and set to this value
@@ -34,8 +44,8 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
         log_scale: use a log base 10 scale
                    note that vmin and vmax correspond to the input image value, not the log scale value
 
-    returns:
-        the rescaled array given the input
+    Returns:
+        The rescaled array given the input.
 
     '''
 
@@ -75,7 +85,7 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
     '''
     meant to replicate plt.imshow()
 
-    args:
+    Args:
         arr: image array that gets rescaled from 0 to 255
         scale: the float scaling, uses lanczos resampling to scale
                this will interpolate some pixels and smooth out features slightly
@@ -87,6 +97,9 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
             log_scale: log scale the image
             title: add title to bottom of image
             font: font
+
+    Returns:
+        The processed image.
     '''
 
     sy, sx = arr.shape
@@ -94,7 +107,7 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
     arr = rescale(arr, 0, 255, end_type=np.uint8, **kwargs)
 
     if cmap is not None:
-        arr = map_value_to_color(arr, colormap=cmap)
+        arr = _map_value_to_color(arr, colormap=cmap)
 
     image = Image.fromarray(arr)
 
@@ -124,6 +137,22 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
     return image
 
 def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=(300,300), padding=10):
+    '''
+    Plots the given x and y data with optional axis limits and padding.
+
+    Args:
+        plot_xs: The x data to plot.
+        plot_ys: The y data to plot.
+        x_min: The minimum x value.
+        x_max: The maximum x value.
+        y_min: The minimum y value.
+        y_max: The maximum y value.
+        size: The size of the plot.
+        padding: The padding around the plot.
+
+    Returns:
+        The plotted image.
+    '''
     sy, sx = size
 
     rs_xs = rescale(plot_xs, padding, sx-padding, vmin=x_min, vmax=x_max)
@@ -144,7 +173,20 @@ def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=
 
     return img
 
-def make_mp4(data, save_path, keep_frames=False, frames_folder='fp_frames_temp', frame_name='frame', framerate=24, use_tqdm=True, titles=None, **kwargs):
+def make_mp4_from_data(data, save_path, keep_frames=False, frames_folder='fp_frames_temp', frame_name='frame', framerate=24, use_tqdm=True, titles=None, **kwargs):
+    '''
+    Makes and MP4 using ffmpeg, pass the arrays of data directly and this function will call imshow to generate each frame.
+
+    Args:
+        data: The image data to include in the video.
+        save_path: The path to save the resulting MP4 file.
+        keep_frames: Whether to keep the individual frame images.
+        frames_folder: The folder to store the individual frame images.
+        frame_name: The base name for the frame image files.
+        framerate: The framerate for the resulting video.
+        use_tqdm: Whether to use tqdm for progress tracking.
+        titles: Optional titles for each frame.
+    '''
     n_places = int(np.log10(len(data))) + 1
 
     frames_folder = Path(frames_folder)
@@ -182,9 +224,9 @@ def make_mp4(data, save_path, keep_frames=False, frames_folder='fp_frames_temp',
 
 def make_mp4_from_files(pattern, save_path, framerate):
     '''
-    make an mp4 file from the files given
+    Make an mp4 file from files that are already written. Needs a pattern to work.
 
-    args:
+    Args:
         pattern: the filename save pattern ie: 'frame_%04d.png' corresponds to frame_0000.png, frame_0001.png, frame_0002.png, etc.
         save_path: the complete path we will be saving to
                    should end in .mp4
@@ -195,7 +237,10 @@ def make_mp4_from_files(pattern, save_path, framerate):
 
 def show_mp4(filename):
     '''
-    shows the mp4 file after its made using the lightweight ffplay player
+    Shows the mp4 file after its made using the lightweight ffplay player
     ffplay comes with ffmpeg!
+
+    Args:
+        filename: The path to the mp4 file to show.
     '''
     subprocess.run(['ffplay', '-loop', '0', filename])

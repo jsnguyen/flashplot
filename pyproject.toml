@@ -4,9 +4,10 @@ version = "0.0.5"
 dependencies = [
   "numpy",
   "matplotlib",
-  "pillow"
+  "pillow",
+  "tqdm>=4.67.1",
 ]
-requires-python = ">= 3.8"
+requires-python = ">= 3.11"
 
 [build-system]
 requires = ["setuptools"]
