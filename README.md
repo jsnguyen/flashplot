@@ -1,19 +1,13 @@
-# flashplot
+# ⚡ flashplot ⚡
 
-Fast plotter using the Pillow library for python. Meant to be a simpler faster version of matplotlib, with less functionality.
+Fast plotter using the Pillow library for Python. Meant to be an extremely simple plotter, with the minimum amount of functionality as possible to work.
 
-## Installation
+## 🪛 Installation
 
 ``` sh
 pip install flashplot
 ```
 
-## Usage
+## 📚 Documentation
 
-``` python
-import flashplot as fp
-
-fp.imshow(np.ran)
-```
-
-Please see for usage: [`examples/examples.py`](examples/examples.py)
+[https://flashplot.readthedocs.io/en/latest/](https://flashplot.readthedocs.io/en/latest/)
