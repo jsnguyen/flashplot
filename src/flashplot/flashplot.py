@@ -13,15 +13,15 @@ from tqdm import tqdm
 # fp.plot()
 
 def _map_value_to_color(value, colormap='viridis'):
-    '''
-    Maps a value to a color using a colormap.
+    '''Maps a value to a color using a colormap.
 
     Args:
-        value: the input value to map
-        colormap: the name of the colormap to use, defaults to 'viridis'
+        value: the input value to map.
+        colormap: the name of the colormap to use, defaults to 'viridis'.
 
     Returns:
         The RGBA color value as a tuple.
+
     '''
 
     norm = plt.Normalize(vmin=0, vmax=255)
@@ -31,18 +31,15 @@ def _map_value_to_color(value, colormap='viridis'):
     return color
 
 def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | None = None, end_type: type | None = None, log_scale: bool = False, nanreplace: float = 0.0):
-    '''
-    Rescales the values in an array to fit between a range
+    '''Rescales the values in an array to fit between a range
 
     Args:
-        lo: the lower limit of the new range
-        hi: the upper limit of the new range
-        vmin: the lower clip bound, anything below this value is clipped and set to this value
-        vmax: the upper clip bound, anything above this value is clipped and set to this value
-        end_type: the final type to cast to e.g. np.uint8, np.float64
-                  casts using ndarray.astype
-        log_scale: use a log base 10 scale
-                   note that vmin and vmax correspond to the input image value, not the log scale value
+        lo: the lower limit of the new range.
+        hi: the upper limit of the new range.
+        vmin: the lower clip bound, anything below this value is clipped and set to this value.
+        vmax: the upper clip bound, anything above this value is clipped and set to this value.
+        end_type: the final type to cast to e.g. np.uint8, np.float64 casts using ndarray.astype.
+        log_scale: use a log base 10 scale note that vmin and vmax correspond to the input image value, not the log scale value.
 
     Returns:
         The rescaled array given the input.
@@ -82,15 +79,12 @@ def rescale(arr, lo: float, hi: float, vmin: float | None = None, vmax: float | 
     return arr
 
 def imshow(arr, scale: float | None = None, int_scale: int | None = None, title: str | None = None, size: tuple | None = None, cmap=None, **kwargs):
-    '''
-    meant to replicate plt.imshow()
+    '''Meant to replicate plt.imshow()
 
     Args:
-        arr: image array that gets rescaled from 0 to 255
-        scale: the float scaling, uses lanczos resampling to scale
-               this will interpolate some pixels and smooth out features slightly
-        int_scale: the integer scaling using nearest neighbor resampling to scale
-                   use this to preserve fine pixel details
+        arr: image array that gets rescaled from 0 to 255.
+        scale: the float scaling, uses lanczos resampling to scale this will interpolate some pixels and smooth out features slightly.
+        int_scale: the integer scaling using nearest neighbor resampling to scale use this to preserve fine pixel details.
         kwargs:
             vmin: lower clip
             vmax: upper clip
@@ -100,6 +94,7 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
 
     Returns:
         The processed image.
+
     '''
 
     sy, sx = arr.shape
@@ -137,8 +132,7 @@ def imshow(arr, scale: float | None = None, int_scale: int | None = None, title:
     return image
 
 def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=(300,300), padding=10):
-    '''
-    Plots the given x and y data with optional axis limits and padding.
+    '''Plots the given x and y data with optional axis limits and padding.
 
     Args:
         plot_xs: The x data to plot.
@@ -147,11 +141,12 @@ def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=
         x_max: The maximum x value.
         y_min: The minimum y value.
         y_max: The maximum y value.
-        size: The size of the plot.
+        size: The size of the plot in pixels.
         padding: The padding around the plot.
 
     Returns:
         The plotted image.
+
     '''
     sy, sx = size
 
@@ -174,8 +169,7 @@ def plot(plot_xs, plot_ys, x_min=None, x_max=None, y_min=None, y_max=None, size=
     return img
 
 def make_mp4_from_data(data, save_path, keep_frames=False, frames_folder='fp_frames_temp', frame_name='frame', framerate=24, use_tqdm=True, titles=None, **kwargs):
-    '''
-    Makes and MP4 using ffmpeg, pass the arrays of data directly and this function will call imshow to generate each frame.
+    '''Makes and MP4 using ffmpeg, pass the arrays of data directly and this function will call imshow to generate each frame.
 
     Args:
         data: The image data to include in the video.
@@ -186,6 +180,7 @@ def make_mp4_from_data(data, save_path, keep_frames=False, frames_folder='fp_fra
         framerate: The framerate for the resulting video.
         use_tqdm: Whether to use tqdm for progress tracking.
         titles: Optional titles for each frame.
+
     '''
     n_places = int(np.log10(len(data))) + 1
 
@@ -223,16 +218,15 @@ def make_mp4_from_data(data, save_path, keep_frames=False, frames_folder='fp_fra
         frames_folder.rmdir()
 
 def make_mp4_from_files(pattern, save_path, framerate):
-    '''
-    Make an mp4 file from files that are already written. Needs a pattern to work.
+    '''Make an mp4 file from files that are already written. Needs a pattern to work.
 
     Args:
         pattern: the filename save pattern ie: 'frame_%04d.png' corresponds to frame_0000.png, frame_0001.png, frame_0002.png, etc.
-        save_path: the complete path we will be saving to
-                   should end in .mp4
-                   e.g. 'saveme/name.mp4'
+        save_path: the complete path we will be saving to should end in .mp4 e.g. 'saveme/name.mp4'
         framerate: the framerate of the ending movie
+
     '''
+
     subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-r', f'{framerate:d}', '-i', f'{pattern}', '-vcodec', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p', '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', f'{save_path}'])
 
 def show_mp4(filename):
@@ -242,5 +236,7 @@ def show_mp4(filename):
 
     Args:
         filename: The path to the mp4 file to show.
+
     '''
+
     subprocess.run(['ffplay', '-loop', '0', filename])
