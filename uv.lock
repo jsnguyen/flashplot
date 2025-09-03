@@ -199,9 +199,13 @@ dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pillow" },
+    { name = "tqdm" },
+]
+
+[package.dev-dependencies]
+docs = [
     { name = "sphinx" },
     { name = "sphinx-rtd-theme" },
-    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -209,9 +213,13 @@ requires-dist = [
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pillow" },
-    { name = "sphinx", specifier = ">=8.2.3" },
-    { name = "sphinx-rtd-theme", specifier = ">=3.0.2" },
     { name = "tqdm", specifier = ">=4.67.1" },
+]
+
+[package.metadata.requires-dev]
+docs = [
+    { name = "sphinx" },
+    { name = "sphinx-rtd-theme" },
 ]
 
 [[package]]
